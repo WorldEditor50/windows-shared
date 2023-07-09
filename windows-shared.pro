@@ -11,6 +11,7 @@ SOURCES += \
 
 HEADERS += \
     crashdump.h \
+    library.hpp \
     process.h \
     winnative.h
 

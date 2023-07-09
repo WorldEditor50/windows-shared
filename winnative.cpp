@@ -54,6 +54,32 @@ std::string WindowsNative::utf8ToGbk(const std::string &utf8)
     return std::string(szGBK.get());
 }
 
+std::string WindowsNative::asciiToUtf8(const std::string &ascii)
+{
+    int len = MultiByteToWideChar(CP_OEMCP, 0, ascii.c_str(), -1, NULL, 0);
+    std::unique_ptr<wchar_t[]> wstr(new wchar_t[len + 1]);
+    memset(wstr.get(), 0, len + 1);
+    MultiByteToWideChar(CP_OEMCP, 0, ascii.c_str(), -1, wstr.get(), len);
+    len = WideCharToMultiByte(CP_UTF8, 0, wstr.get(), -1, NULL, 0, NULL, NULL);
+    std::unique_ptr<char[]> utf8(new char[len + 1]);
+    memset(utf8.get(), 0, len + 1);
+    WideCharToMultiByte(CP_UTF8, 0, wstr.get(), -1, utf8.get(), len, NULL, NULL);
+    return std::string(utf8.get());
+}
+
+std::string WindowsNative::utf8ToAscii(const std::string &utf8)
+{
+    int len = MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, NULL, 0);
+    std::unique_ptr<wchar_t[]> wszAscii(new wchar_t[len + 1]);
+    memset(wszAscii.get(), 0, len * 2 + 2);
+    MultiByteToWideChar(CP_UTF8, 0, utf8.c_str(), -1, wszAscii.get(), len);
+    len = WideCharToMultiByte(CP_OEMCP, 0, wszAscii.get(), -1, NULL, 0, NULL, NULL);
+    std::unique_ptr<char[]> szAscii(new char[len + 1]);
+    memset(szAscii.get(), 0, len + 1);
+    WideCharToMultiByte(CP_OEMCP, 0, wszAscii.get(), -1, szAscii.get(), len, NULL, NULL);
+    return std::string(szAscii.get());
+}
+
 std::string WindowsNative::findProcess(unsigned long pid)
 {
     std::string procName;

@@ -21,6 +21,9 @@ std::wstring stringToWString(const std::string &s);
 std::string wstringToString(const std::wstring &s);
 std::string gbkToUtf8(const std::string &gbk);
 std::string utf8ToGbk(const std::string &utf8);
+std::string asciiToUtf8(const std::string &ascii);
+std::string utf8ToAscii(const std::string &utf8);
+
 /* process */
 class Proc
 {

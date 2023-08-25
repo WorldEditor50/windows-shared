@@ -4,15 +4,37 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-        crashdump.cpp \
+        commandline.cpp \
+        fileutils.cpp \
         main.cpp \
         process.cpp \
-        winnative.cpp
+        regeditor.cpp \
+        sharedmemory.cpp \
+        stringutils.cpp
 
 HEADERS += \
-    crashdump.h \
+    clock.hpp \
+    cmutex.hpp \
+    commandline.h \
+    common_def.h \
+    conditionalvar.hpp \
+    crashdump.hpp \
+    criticalsection.hpp \
+    csv.hpp \
+    cthread.hpp \
+    ctimer.hpp \
+    daemon.hpp \
+    fileutils.h \
+    inihelper.hpp \
     library.hpp \
+    pipe.h \
     process.h \
-    winnative.h
+    regeditor.h \
+    semaphore.hpp \
+    service.hpp \
+    sharedmemory.h \
+    srwlock.hpp \
+    stringutils.h \
+    tcpserver.hpp
 
 LIBS += shell32.lib user32.lib

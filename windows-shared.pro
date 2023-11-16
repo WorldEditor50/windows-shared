@@ -33,8 +33,9 @@ HEADERS += \
     semaphore.hpp \
     service.hpp \
     sharedmemory.h \
+    socket.hpp \
     srwlock.hpp \
     stringutils.h \
-    tcpserver.hpp
+    usbdiscovery.hpp
 
 LIBS += shell32.lib user32.lib

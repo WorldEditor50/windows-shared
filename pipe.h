@@ -2,7 +2,6 @@
 #define PIPE_H
 #include <Windows.h>
 #include <string>
-#include <memory>
 #include <cstring>
 
 class Pipe
@@ -42,11 +41,11 @@ public:
 
     std::string read(std::size_t totalsize)
     {
-        std::unique_ptr<char[]> ptr = std::make_unique<char[]>(totalsize);
-        memset(ptr.get(), 0, totalsize);
+        char* ptr = new char[totalsize];
+        memset(ptr, 0, totalsize);
         DWORD dwReadSize = 0;
-        ReadFile(handle[Pipe::READ], ptr.get(), totalsize, &dwReadSize, nullptr);
-        return std::string(ptr.get(), dwReadSize);
+        ReadFile(handle[Pipe::READ], ptr, totalsize, &dwReadSize, nullptr);
+        return std::string(ptr, dwReadSize);
     }
 
 };

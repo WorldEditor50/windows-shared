@@ -22,64 +22,50 @@ public:
 
     }
 
-    void wait(SRWLock &srwLock, const FnConditon condition, int timeout=-1)
+    void wait(SRWLock &srwLock, const FnConditon condition, int msec=-1)
     {
-        int timeout_ = timeout;
-        if (timeout < 0) {
-            timeout_ = INFINITE;
-        }
-
-        while (condition() == false) {
+        int timeout = msec < 0 ? INFINITE : msec;
+        while (!condition()) {
             SleepConditionVariableSRW(&var,
                                       &srwLock.lock,
-                                      timeout_,
+                                      timeout,
                                       CONDITION_VARIABLE_LOCKMODE_SHARED);
         }
         return;
     }
 
-    void wait(CriticalSection &cs, const FnConditon condition, int timeout=-1)
+    void wait(CriticalSection &cs, const FnConditon condition, int msec=-1)
     {
-        int timeout_ = timeout;
-        if (timeout < 0) {
-            timeout_ = INFINITE;
-        }
-        while (condition() == false) {
+        int timeout = msec < 0 ? INFINITE : msec;
+        while (!condition()) {
             SleepConditionVariableCS(&var,
                                      &cs.section,
-                                     timeout_);
+                                     timeout);
         }
         return;
     }
 
     template<class T>
-    void wait(SRWLock &srwLock, const T *obj, int timeout=-1)
+    void wait(SRWLock &srwLock, const T *obj, int msec=-1)
     {
-        int timeout_ = timeout;
-        if (timeout < 0) {
-            timeout_ = INFINITE;
-        }
-
-        while (!obj->isProceed()) {
+        int timeout = msec < 0 ? INFINITE : msec;
+        while (!obj->isReady()) {
             SleepConditionVariableSRW(&var,
                                       &srwLock.lock,
-                                      timeout_,
+                                      timeout,
                                       CONDITION_VARIABLE_LOCKMODE_SHARED);
         }
         return;
     }
 
     template<class T>
-    void wait(CriticalSection &cs, const T *obj, int timeout=-1)
+    void wait(CriticalSection &cs, const T *obj, int msec=-1)
     {
-        int timeout_ = timeout;
-        if (timeout < 0) {
-            timeout_ = INFINITE;
-        }
-        while (!obj->isProceed()) {
+        int timeout = msec < 0 ? INFINITE : msec;
+        while (!obj->isReady()) {
             SleepConditionVariableCS(&var,
                                      &cs.section,
-                                     timeout_);
+                                     timeout);
         }
         return;
     }

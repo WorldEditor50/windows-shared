@@ -112,3 +112,71 @@ std::wstring StringUtils::wformat(const wchar_t *pszFormat, ...)
 
     return buffer;
 }
+
+char StringUtils::Hex::toInt4(char c)
+{
+    char x = 0;
+    if (c >= 'A' && c <= 'Z') {
+      x = c - 'A' + 10;
+    } else if (c >= 'a' && c <= 'z') {
+       x = c - 'a' + 10;
+    } else if (c >= '0' && c <= '9') {
+       x = c - '0';
+    }
+    return x;
+}
+
+WCHAR StringUtils::Hex::toInt4(WCHAR c)
+{
+    WCHAR x = 0;
+    if (c >= 'A' && c <= 'Z') {
+      x = c - 'A' + 10;
+    } else if (c >= 'a' && c <= 'z') {
+       x = c - 'a' + 10;
+    } else if (c >= '0' && c <= '9') {
+       x = c - '0';
+    }
+    return x;
+}
+
+unsigned char StringUtils::Hex::toInt8(const char* hex)
+{
+    unsigned char x0 = toInt4(hex[1]);
+    unsigned char x1 = toInt4(hex[0]);
+    return (x1<<4) + x0;
+}
+unsigned short StringUtils::Hex::toInt16(const std::string &hex)
+{
+    unsigned char x0 = toInt4(hex[3]);
+    unsigned char x1 = toInt4(hex[2]);
+    unsigned char x2 = toInt4(hex[1]);
+    unsigned char x3 = toInt4(hex[0]);
+    return (x3<<12) + (x2<<8) + (x1<<4) + x0;
+}
+
+unsigned short StringUtils::Hex::toInt16(const std::wstring &hex)
+{
+    unsigned char x0 = toInt4(hex[3]);
+    unsigned char x1 = toInt4(hex[2]);
+    unsigned char x2 = toInt4(hex[1]);
+    unsigned char x3 = toInt4(hex[0]);
+    return (x3<<12) + (x2<<8) + (x1<<4) + x0;
+}
+
+unsigned int StringUtils::Hex::toInt32(const std::string &hex)
+{
+    unsigned int x = 0;
+    for (int i = 7; i >= 0; i--) {
+        x |= (toInt4(hex[i])<<i*4);
+    }
+    return x;
+}
+
+unsigned int StringUtils::Hex::toInt32(const std::wstring &hex)
+{
+    unsigned int x = 0;
+    for (int i = 7; i >= 0; i--) {
+        x |= (toInt4(hex[i])<<i*4);
+    }
+    return x;
+}

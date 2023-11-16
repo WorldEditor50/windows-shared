@@ -34,7 +34,7 @@ protected:
     }
 
 
-    virtual void run() override
+    virtual int run() override
     {
         while (1) {
             CriticalSection::Lock locker(cs);
@@ -54,7 +54,7 @@ protected:
             }
             //Sleep(3000);
         }
-        return;
+        return 0;
     }
 
 public:
@@ -63,7 +63,7 @@ public:
     {
         stop();
     }
-    bool isProceed() const
+    bool isReady() const
     {
         return state == STATE_RUN || state == STATE_TERMINATE;
     }

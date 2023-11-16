@@ -23,37 +23,52 @@ public:
         PROPERTY_IDLE_PRIORITY = IDLE_PRIORITY_CLASS,
         PROPERTY_HIGH_PRIORITY = NORMAL_PRIORITY_CLASS
     };
-
-    enum JobState {
-        JOB_PREPEND = 0,
-        JOB_FINISHED
-    };
-
+#if 0
+    typedef unsigned __stdcall (*FnInvoke)(void * param);
+#else
+    typedef DWORD (WINAPI *FnInvoke)(LPVOID lpThreadParameter);
+#endif
 public:
     HANDLE handle;
     int state;
-    int jobState;
     DWORD address;
 protected:
-    static unsigned __stdcall startAddress(void * obj)
+    static DWORD WINAPI routine(LPVOID params)
     {
-        CThread* this_ = static_cast<CThread*>(obj);
-        if (this_ != nullptr) {
-            this_->run();
-            this_->setJob(JOB_FINISHED);
-        }
+        CThread *this_ = static_cast<CThread*>(params);
+        return this_->run();
         return 0;
     }
-
-    virtual void run(){}
+    virtual int run(){return 0;}
 public:
-    CThread():handle(nullptr),state(STATE_NONE),jobState(JOB_PREPEND),address(0){}
+    CThread():handle(nullptr),state(STATE_NONE),address(0){}
+    template<typename T>
+    explicit CThread(FnInvoke func, T* obj, int property = PROPERTY_DEFAULT)
+        :handle(nullptr),state(STATE_NONE),address(0)
+    {
+#if 0
+        handle = (HANDLE)_beginthreadex(NULL,
+                                        0,
+                                        func,
+                                        obj, property, &address);
+#else
+        handle = ::CreateThread(NULL,
+                                0,
+                                func,
+                                obj, property, &address);
+#endif
+        if (handle == NULL) {
+            return;
+        }
+        if (property == PROPERTY_SUSPEND) {
+            state = STATE_SUSPEND;
+        } else {
+            state = STATE_RUN;
+        }
+    }
 
     virtual ~CThread()
     {
-        if (jobState != JOB_PREPEND) {
-            join(-1);
-        }
         if (handle != NULL) {
             CloseHandle(handle);
         }
@@ -63,28 +78,28 @@ public:
 
     virtual int start(int property = PROPERTY_DEFAULT)
     {
-        if (state != STATE_NONE) {
-            return 0;
+        if (handle != NULL) {
+            return -1;
         }
 #if 0
-        handle = (HANDLE)_beginthreadex(NULL, 0, CThread::startAddress, this, property, &address);
+        handle = (HANDLE)_beginthreadex(NULL,
+                                        0,
+                                        &routine,
+                                        this, property, &address);
 #else
         handle = ::CreateThread(NULL,
                                 0,
-                                (LPTHREAD_START_ROUTINE)CThread::startAddress,
-                                this,
-                                property,
-                                &address);
+                                &CThread::routine,
+                                this, property, &address);
 #endif
         if (handle == NULL) {
-            return -1;
+            return -2;
         }
         if (property == PROPERTY_SUSPEND) {
             state = STATE_SUSPEND;
         } else {
             state = STATE_RUN;
         }
-        jobState = JOB_PREPEND;
         return 0;
     }
 
@@ -114,17 +129,15 @@ public:
         return 0;
     }
 
-    virtual void join(int timeout=-1)
+    virtual void join(int msec=-1)
     {
         if (handle == nullptr || state == STATE_NONE) {
             return;
         }
-        if (timeout <= 0) {
-            timeout = INFINITE;
-        }
+
+        int timeout = msec < 0 ? INFINITE : msec;
         DWORD ret = ::WaitForSingleObject(handle, timeout);
         if (ret == WAIT_OBJECT_0) {
-            jobState = JOB_PREPEND;
             state = STATE_NONE;
         }
         return;
@@ -143,12 +156,6 @@ public:
             return 0;
         }
         return -2;
-    }
-
-    virtual void setJob(JobState jobState_)
-    {
-        jobState = jobState_;
-        return;
     }
 
 };

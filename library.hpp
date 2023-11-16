@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include <string>
 
-namespace WindowsNative {
+namespace wn {
 
 
 class Library

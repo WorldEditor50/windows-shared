@@ -16,19 +16,19 @@ void CommandLine::openUrl(const std::wstring &url, bool visible)
     if (visible == true) {
         flag = SW_SHOW;
     }
-    ShellExecute(NULL, TEXT("open"), url.c_str(), NULL, NULL, flag);
+    ShellExecuteW(NULL, L"open", url.c_str(), NULL, NULL, flag);
     return;
 }
 
 void CommandLine::execAsAdmin(const std::wstring &cmd)
 {
-    SHELLEXECUTEINFO info;
+    SHELLEXECUTEINFOW info;
     info.fMask = NULL;
     info.lpVerb = L"runas";
     info.lpFile = L"cmd.exe";
     info.lpParameters = cmd.c_str();
     info.nShow = SW_HIDE;
-    ShellExecuteEx(&info);
+    ShellExecuteExW(&info);
     return;
 }
 
@@ -39,11 +39,11 @@ void CommandLine::elevateCurrentProcess()
     }
     HANDLE hProc = GetCurrentProcess();
     WCHAR appPath[MAX_PATH];
-    DWORD ret = GetModuleFileName(NULL, appPath, MAX_PATH);
+    DWORD ret = GetModuleFileNameW(NULL, appPath, MAX_PATH);
     if (ret != 0) {
         return;
     }
-    SHELLEXECUTEINFO info;
+    SHELLEXECUTEINFOW info;
     info.cbSize = sizeof (SHELLEXECUTEINFO);
     info.fMask = NULL;
     info.hProcess = hProc;
@@ -51,6 +51,6 @@ void CommandLine::elevateCurrentProcess()
     info.lpFile = appPath;
     info.lpParameters = NULL;
     info.nShow = SW_HIDE;
-    ShellExecuteEx(&info);
+    ShellExecuteExW(&info);
     return;
 }

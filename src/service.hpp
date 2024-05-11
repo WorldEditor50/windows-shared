@@ -22,7 +22,7 @@ public:
            printf("OpenSCManager failed (%d)/n", GetLastError());
            return FALSE;
         }
-        SC_HANDLE schService = CreateService(schSCManager,              // SCManager database
+        SC_HANDLE schService = CreateServiceW(schSCManager,              // SCManager database
                                              serviceName.c_str(),       // name of service
                                              displayName.c_str(),       // service name to display
                                              SERVICE_ALL_ACCESS,        // desired access
@@ -41,12 +41,12 @@ public:
              return FALSE;
          }
 
-         if (!StartService(schService, NULL, NULL)){
+         if (!StartServiceW(schService, NULL, NULL)){
              CloseServiceHandle(schService);
              printf("StartService failed (%d)/n", GetLastError());
              return FALSE;
          }
-         CloseServiceHandle(schService);
+         CloseServiceHandleW(schService);
          return TRUE;
     }
 
@@ -54,7 +54,7 @@ public:
     {
         SC_HANDLE schSCManager;
         // Open a handle to the SC Manager database.
-        schSCManager = OpenSCManager(NULL,                    // local machine
+        schSCManager = OpenSCManagerW(NULL,                    // local machine
                                      NULL,                    // ServicesActive database
                                      SC_MANAGER_ALL_ACCESS);  // full access rights
 
@@ -62,7 +62,7 @@ public:
             printf("OpenSCManager failed (%d)/n", GetLastError());
             return FALSE;
         }
-        SC_HANDLE schService = OpenService(schSCManager,            // SCManager database
+        SC_HANDLE schService = OpenServiceW(schSCManager,            // SCManager database
                                            serviceName.c_str(),     // name of service
                                            DELETE);                 // only need DELETE access
 
@@ -71,11 +71,11 @@ public:
              return FALSE;
          }
 
-         if (!DeleteService(schService)) {
+         if (!DeleteServiceW(schService)) {
              printf("DeleteService failed (%d)/n", GetLastError());
              return FALSE;
          }
-         CloseServiceHandle(schService);
+         CloseServiceHandleW(schService);
          return TRUE;
      }
 

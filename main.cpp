@@ -1,10 +1,10 @@
 #include <iostream>
 #include <chrono>
-#include "commandline.h"
-#include "crashdump.hpp"
-#include "clock.hpp"
-#include "ctimer.hpp"
-#include "usbdiscovery.hpp"
+#include "src/commandline.h"
+#include "src/crashdump.hpp"
+#include "src/clock.hpp"
+#include "src/ctimer.hpp"
+#include "src/usbdiscovery.hpp"
 
 void test_crashdump()
 {

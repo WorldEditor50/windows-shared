@@ -10,8 +10,8 @@ int FileUtils::getAllFiles(const std::wstring &dir, const std::wstring& postfix,
         dir_ = dir + L"\\" + postfix;
     }
     LARGE_INTEGER size;
-    WIN32_FIND_DATA findData;
-    HANDLE hFind = FindFirstFile(dir_.c_str(), &findData);
+    WIN32_FIND_DATAW findData;
+    HANDLE hFind = FindFirstFileW(dir_.c_str(), &findData);
     if (hFind == INVALID_HANDLE_VALUE) {
         std::cout << "Failed to find first file!\n";
         return -1;
@@ -28,14 +28,14 @@ int FileUtils::getAllFiles(const std::wstring &dir, const std::wstring& postfix,
             std::wstring path = dir + L"\\" + fileName;
             filePaths.push_back(path);
         }
-    } while (FindNextFile(hFind, &findData));
+    } while (FindNextFileW(hFind, &findData));
     FindClose(hFind);
     return 0;
 }
 
 int FileUtils::getFiles(const std::wstring &dir, const std::wstring &postfix, std::vector<std::wstring> & filePaths)
 {
-    WIN32_FIND_DATA findData;
+    WIN32_FIND_DATAW findData;
     std::wstring dir_;
     if (postfix.empty()) {
         dir_ = dir + L"\\*.*";
@@ -43,7 +43,7 @@ int FileUtils::getFiles(const std::wstring &dir, const std::wstring &postfix, st
     else {
         dir_ = dir + L"\\" + postfix;
     }
-    HANDLE hFind = FindFirstFile(dir_.c_str(), &findData);
+    HANDLE hFind = FindFirstFileW(dir_.c_str(), &findData);
     if (hFind == INVALID_HANDLE_VALUE) {
         std::cout << "Failed to find first file!\n";
         return -1;
@@ -65,7 +65,7 @@ int FileUtils::getFiles(const std::wstring &dir, const std::wstring &postfix, st
         
         std::wstring path = dir + L"\\" + fileName;
         filePaths.push_back(path);
-    } while (FindNextFile(hFind, &findData));
+    } while (FindNextFileW(hFind, &findData));
 
     return 0;
 }
@@ -75,7 +75,7 @@ void FileUtils::remove(const std::wstring& filePath)
     if (filePath.empty()) {
         return;
     }
-    DeleteFile(filePath.c_str());
+    DeleteFileW(filePath.c_str());
     return;
 }
 

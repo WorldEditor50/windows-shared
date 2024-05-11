@@ -15,7 +15,7 @@ int SharedMemory::mappingTo(const std::wstring &fileName_, std::size_t size_)
 
     totalsize = size_;
     fileName = fileName_;
-    hMapFile = CreateFileMapping(
+    hMapFile = CreateFileMappingW(
                   INVALID_HANDLE_VALUE,    // use paging file
                   NULL,                    // default security
                   PAGE_READWRITE,          // read/write access
@@ -46,7 +46,7 @@ int SharedMemory::attach(const std::wstring &fileName_, std::size_t size_)
     }
     totalsize = size_;
     fileName = fileName_;
-    hMapFile = OpenFileMapping(
+    hMapFile = OpenFileMappingW(
                     FILE_MAP_ALL_ACCESS,   // read/write access
                     FALSE,                 // do not inherit the name
                     fileName_.c_str());    // name of mapping object

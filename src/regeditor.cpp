@@ -9,7 +9,7 @@ LONG RegEditor::createKey(HKEY hKey, const std::wstring &subKey)
 {
     HKEY hNewKey = nullptr;
     DWORD disposition = 0;
-    LONG ret = RegCreateKeyEx(hKey, subKey.c_str(), 0, nullptr,
+    LONG ret = RegCreateKeyExW(hKey, subKey.c_str(), 0, nullptr,
                               REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, nullptr, &hNewKey, &disposition);
     if (ret != ERROR_SUCCESS) {
         return ret;
@@ -22,7 +22,7 @@ LONG RegEditor::createKey(HKEY hKey, const std::wstring &subKey)
 
 LONG RegEditor::deleteKey(HKEY hKey, const std::wstring &subKey)
 {
-    return RegDeleteTree(hKey, subKey.c_str());
+    return RegDeleteTreeW(hKey, subKey.c_str());
 }
 
 LONG RegEditor::getDWORD(HKEY hKey,
@@ -31,14 +31,14 @@ LONG RegEditor::getDWORD(HKEY hKey,
                         DWORD &data)
 {
     DWORD datasize = sizeof (DWORD);
-    return RegGetValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_DWORD,
+    return RegGetValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_DWORD,
                        nullptr, &data, &datasize);
 }
 
 LONG RegEditor::getQWORD(HKEY hKey, const std::wstring &subKey, const std::wstring &value, unsigned long &data)
 {
     DWORD datasize = sizeof (unsigned long);
-    return RegGetValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_QWORD,
+    return RegGetValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_QWORD,
                        nullptr, &data, &datasize);
 }
 
@@ -47,14 +47,14 @@ LONG RegEditor::getRegSZ(HKEY hKey, const std::wstring &subKey, const std::wstri
 {
     DWORD datasize = 0;
     /* get length */
-    LONG ret = RegGetValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_SZ,
+    LONG ret = RegGetValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_SZ,
                        nullptr, nullptr, &datasize);
     if (ret != ERROR_SUCCESS) {
         return ret;
     }
     /* get data */
     data.resize(datasize);
-    ret = RegGetValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_SZ,
+    ret = RegGetValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_SZ,
                        nullptr, &data[0], &datasize);
     if (ret != ERROR_SUCCESS) {
         return ret;
@@ -66,14 +66,14 @@ LONG RegEditor::getRegExpandSZ(HKEY hKey, const std::wstring &subKey, const std:
 {
     DWORD datasize = 0;
     /* get length */
-    LONG ret = RegGetValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_EXPAND_SZ,
+    LONG ret = RegGetValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_EXPAND_SZ,
                        nullptr, nullptr, &datasize);
     if (ret != ERROR_SUCCESS) {
         return ret;
     }
     /* get data */
     data.resize(datasize);
-    ret = RegGetValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_EXPAND_SZ,
+    ret = RegGetValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_EXPAND_SZ,
                        nullptr, &data[0], &datasize);
     if (ret != ERROR_SUCCESS) {
         return ret;
@@ -85,14 +85,14 @@ LONG RegEditor::getRegMultiSZ(HKEY hKey, const std::wstring &subKey, const std::
 {
     DWORD datasize = 0;
     /* get length */
-    LONG ret = RegGetValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_MULTI_SZ,
+    LONG ret = RegGetValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_MULTI_SZ,
                        nullptr, nullptr, &datasize);
     if (ret != ERROR_SUCCESS) {
         return ret;
     }
     /* get data */
     std::vector<WCHAR> data_(datasize);
-    ret = RegGetValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_MULTI_SZ,
+    ret = RegGetValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_MULTI_SZ,
                        nullptr, &data[0], &datasize);
     if (ret != ERROR_SUCCESS) {
         return ret;
@@ -115,14 +115,14 @@ LONG RegEditor::getBinary(HKEY hKey, const std::wstring &subKey, const std::wstr
 {
     DWORD datasize = 0;
     /* get length */
-    LONG ret = RegGetValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_BINARY,
+    LONG ret = RegGetValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_BINARY,
                        nullptr, nullptr, &datasize);
     if (ret != ERROR_SUCCESS) {
         return ret;
     }
     /* get data */
     data.resize(datasize);
-    ret = RegGetValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_BINARY,
+    ret = RegGetValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_BINARY,
                        nullptr, &data[0], &datasize);
     if (ret != ERROR_SUCCESS) {
         return ret;
@@ -134,7 +134,7 @@ LONG RegEditor::enumValues(HKEY hKey, std::vector<std::pair<std::wstring, DWORD>
 {
     DWORD valueCount = 0;
     DWORD maxValueNameLen = 0;
-    LONG ret = RegQueryInfoKey(hKey, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
+    LONG ret = RegQueryInfoKeyW(hKey, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr,
                                &valueCount, &maxValueNameLen, nullptr, nullptr, nullptr);
     if (ret != ERROR_SUCCESS) {
         return ret;
@@ -144,7 +144,7 @@ LONG RegEditor::enumValues(HKEY hKey, std::vector<std::pair<std::wstring, DWORD>
     for (DWORD index = 0; index < valueCount; index++) {
         DWORD valueNameLen = maxValueNameLen;
         DWORD valueType{};
-        ret = ::RegEnumValue(hKey, index, nameBuffer.get(), &valueNameLen,
+        ret = ::RegEnumValueW(hKey, index, nameBuffer.get(), &valueNameLen,
                              nullptr, &valueType, nullptr,  nullptr);
         if (ret != ERROR_SUCCESS) {
             continue;
@@ -160,25 +160,25 @@ LONG RegEditor::enumValues(HKEY hKey, std::vector<std::pair<std::wstring, DWORD>
 LONG RegEditor::setDWORD(HKEY hKey, const std::wstring &subKey, const std::wstring &value, DWORD data)
 {
     DWORD datasize = sizeof (DWORD);
-    return RegSetKeyValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_DWORD, &data, datasize);
+    return RegSetKeyValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_DWORD, &data, datasize);
 }
 
 LONG RegEditor::setQWORD(HKEY hKey, const std::wstring &subKey, const std::wstring &value, unsigned long data)
 {
     DWORD datasize = sizeof (unsigned long);
-    return RegSetKeyValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_QWORD, &data, datasize);
+    return RegSetKeyValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_QWORD, &data, datasize);
 }
 
 LONG RegEditor::setRegSZ(HKEY hKey, const std::wstring &subKey, const std::wstring &value, const std::wstring &data)
 {
     DWORD datasize = data.size();
-    return RegSetKeyValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_SZ, &data[0], datasize);
+    return RegSetKeyValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_SZ, &data[0], datasize);
 }
 
 LONG RegEditor::setRegExpandSZ(HKEY hKey, const std::wstring &subKey, const std::wstring &value, const std::wstring &data)
 {
     DWORD datasize = data.size();
-    return RegSetKeyValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_EXPAND_SZ, &data[0], datasize);
+    return RegSetKeyValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_EXPAND_SZ, &data[0], datasize);
 }
 
 LONG RegEditor::setRegMultiSZ(HKEY hKey, const std::wstring &subKey, const std::wstring &value, std::vector<std::wstring> &data)
@@ -190,12 +190,12 @@ LONG RegEditor::setRegMultiSZ(HKEY hKey, const std::wstring &subKey, const std::
         pos += data.size();
     }
     DWORD datasize = data_.size();
-    return RegSetKeyValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_MULTI_SZ,
+    return RegSetKeyValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_MULTI_SZ,
                           &data_[0], datasize);
 }
 
 LONG RegEditor::setBinary(HKEY hKey, const std::wstring &subKey, const std::wstring &value, std::vector<WCHAR> &data)
 {
     DWORD datasize = data.size();
-    return RegSetKeyValue(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_EXPAND_SZ, &data[0], datasize);
+    return RegSetKeyValueW(hKey, subKey.c_str(), value.c_str(), RRF_RT_REG_EXPAND_SZ, &data[0], datasize);
 }

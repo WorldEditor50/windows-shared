@@ -8,7 +8,7 @@ Process::~Process()
 HMODULE Process::getModuleAddr(LPCWSTR lpModuleName)
 {
      HANDLE hModuleSnap = INVALID_HANDLE_VALUE;
-     MODULEENTRY32 me32;
+     MODULEENTRY32W me32;
      HMODULE hModule = 0;
 
     // Take a snapshot of all modules in the specified process.
@@ -23,7 +23,7 @@ HMODULE Process::getModuleAddr(LPCWSTR lpModuleName)
 
     // Retrieve information about the first module,
     // and exit if unsuccessful
-    if (!Module32First(hModuleSnap, &me32)) {
+    if (!Module32FirstW(hModuleSnap, &me32)) {
         //printf("Error: Module32First ");  // show cause of failure
         CloseHandle(hModuleSnap);     // clean the snapshot object
         return NULL;
@@ -38,7 +38,7 @@ HMODULE Process::getModuleAddr(LPCWSTR lpModuleName)
             return hModule;
         }
 
-    } while (Module32Next(hModuleSnap, &me32));
+    } while (Module32NextW(hModuleSnap, &me32));
 
     CloseHandle(hModuleSnap);
     return NULL;
@@ -54,7 +54,7 @@ int Process::start(std::wstring &fileName, const std::vector<std::wstring> &para
     for (std::size_t i = 0; i < paramList.size(); i++) {
         params += paramList[i] + L" ";
     }
-    bool bRet = ::CreateProcess(fileName.c_str(),
+    bool bRet = ::CreateProcessW(fileName.c_str(),
                                 (WCHAR*)params.c_str(),
                                 NULL,
                                 NULL,
@@ -85,7 +85,7 @@ int Process::startDetached(std::wstring &fileName, const std::vector<std::wstrin
     for (std::size_t i = 0; i < paramList.size(); i++) {
         params += paramList[i] + L" ";
     }
-    BOOL bRet = ::CreateProcess(fileName.c_str(),
+    BOOL bRet = ::CreateProcessW(fileName.c_str(),
                                 (WCHAR*)params.c_str(),
                                 NULL,
                                 NULL,
@@ -136,7 +136,7 @@ void Process::find(LPCWSTR lpName, BOOL bWindow)
         stProcessInfo.hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, stProcessInfo.dwProcessId);
     } else {
         HANDLE hProcessSnap;
-        PROCESSENTRY32 pe32;
+        PROCESSENTRY32W pe32;
 
        // Take a snapshot of all processes in the system.
         hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -147,11 +147,11 @@ void Process::find(LPCWSTR lpName, BOOL bWindow)
         }
 
        // Set the size of the structure before using it.
-        pe32.dwSize = sizeof(PROCESSENTRY32);
+        pe32.dwSize = sizeof(PROCESSENTRY32W);
 
        // Retrieve information about the first process,
         // and exit if unsuccessful
-        if (!Process32First(hProcessSnap, &pe32))
+        if (!Process32FirstW(hProcessSnap, &pe32))
         {
             //printf("Error: Process32First "); // show cause of failure
             CloseHandle(hProcessSnap);          // clean the snapshot object
@@ -169,7 +169,7 @@ void Process::find(LPCWSTR lpName, BOOL bWindow)
                 break;
             }
 
-       } while (Process32Next(hProcessSnap, &pe32));
+       } while (Process32NextW(hProcessSnap, &pe32));
 
        CloseHandle(hProcessSnap);
     }
@@ -181,19 +181,19 @@ void Process::find(LPCWSTR lpName, BOOL bWindow)
 std::wstring Process::find(DWORD pid)
 {
     std::wstring procName;
-    PROCESSENTRY32 pe32;
+    PROCESSENTRY32W pe32;
     pe32.dwSize = sizeof(pe32);
     HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (hProcessSnap == INVALID_HANDLE_VALUE) {
         return procName;
     }
-    BOOL ret = Process32First(hProcessSnap, &pe32);
+    BOOL ret = Process32FirstW(hProcessSnap, &pe32);
     while (ret)  {
         if (pe32.th32ProcessID == pid) {
             procName = std::wstring(pe32.szExeFile);
             break;
         }
-        ret = Process32Next(hProcessSnap, &pe32);
+        ret = Process32NextW(hProcessSnap, &pe32);
     }
     CloseHandle(hProcessSnap);
     return procName;
@@ -202,18 +202,18 @@ std::wstring Process::find(DWORD pid)
 std::vector<DWORD> Process::find(const std::wstring &procName)
 {
     std::vector<DWORD> pids;
-    PROCESSENTRY32 pe32;
-    pe32.dwSize = sizeof(pe32);
+    PROCESSENTRY32W pe32;
+    pe32.dwSize = sizeof(PROCESSENTRY32W);
     HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (hProcessSnap == INVALID_HANDLE_VALUE) {
         return pids;
     }
-    BOOL ret = Process32First(hProcessSnap, &pe32);
+    BOOL ret = Process32FirstW(hProcessSnap, &pe32);
     while (ret)  {
         if (std::wstring(pe32.szExeFile) == procName) {
             pids.push_back(pe32.th32ProcessID);
         }
-        ret = Process32Next(hProcessSnap, &pe32);
+        ret = Process32NextW(hProcessSnap, &pe32);
     }
     CloseHandle(hProcessSnap);
     return pids;
@@ -247,16 +247,16 @@ void Process::kill(const std::wstring &processName)
 std::vector<Process::Property> Process::getAllProcess()
 {
     std::vector<Process::Property> proc;
-    PROCESSENTRY32 pe32;
-    pe32.dwSize = sizeof(pe32);
+    PROCESSENTRY32W pe32;
+    pe32.dwSize = sizeof(PROCESSENTRY32W);
     HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
     if (hProcessSnap == INVALID_HANDLE_VALUE) {
         return proc;
     }
-    BOOL ret = Process32First(hProcessSnap, &pe32);
+    BOOL ret = Process32FirstW(hProcessSnap, &pe32);
     while (ret)  {
         proc.push_back(Process::Property(pe32.th32ProcessID, pe32.szExeFile));
-        ret = Process32Next(hProcessSnap, &pe32);
+        ret = Process32NextW(hProcessSnap, &pe32);
     }
     CloseHandle(hProcessSnap);
     return proc;

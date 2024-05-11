@@ -62,7 +62,7 @@ private:
             }
 
             /* parse device */
-            DEV_BROADCAST_DEVICEINTERFACE *devInterface = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE*>(broadcast);
+            DEV_BROADCAST_DEVICEINTERFACE_W *devInterface = reinterpret_cast<DEV_BROADCAST_DEVICEINTERFACE_W*>(broadcast);
 
             std::string uuid = guid2String(devInterface->dbcc_classguid);
             if (discovery->deviceMap.find(uuid) == discovery->deviceMap.end()) {

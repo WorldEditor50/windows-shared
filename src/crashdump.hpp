@@ -129,7 +129,7 @@ public:
                 , sys_time.wYear, sys_time.wMonth, sys_time.wDay
                 , sys_time.wHour, sys_time.wMinute, sys_time.wSecond, i);
 
-            if (::GetFileAttributes(filePath) == INVALID_FILE_ATTRIBUTES) {
+            if (::GetFileAttributesW(filePath) == INVALID_FILE_ATTRIBUTES) {
                 break;
             }
         }

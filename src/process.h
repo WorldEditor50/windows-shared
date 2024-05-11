@@ -21,7 +21,7 @@ public:
     };
 public:
      PROCESS_INFORMATION stProcessInfo;
-     STARTUPINFO stStartUpInfo;
+     STARTUPINFOW stStartUpInfo;
      std::wstring env;
      std::wstring dir;
 public:
